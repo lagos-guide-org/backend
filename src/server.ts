@@ -17,7 +17,7 @@ app.use("/users", userRoutes);
 
 // Home route
 app.get("/", (req: Request, res: Response) => {
-  res.send("Welcome to the Express.js TypeScript Project!");
+  res.send("Welcome to the Express.js TypeScript Project Setup!");
 });
 
 // 404 Error Handling
