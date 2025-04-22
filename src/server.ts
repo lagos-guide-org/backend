@@ -1,37 +1,51 @@
 import express, { Request, Response, NextFunction } from "express";
 import morgan from "morgan";
 import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import connectDB from "./db/mongo";
+import locationRouter from "./routes/locationRouter";
+import routeRouter from "./routes/routeRouter";
 
-import userRoutes from "./routes/userRouter";
+dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(morgan("dev"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Connect to MongoDB before starting the server
+connectDB()
+  .then(() => {
+    console.log("✅ MongoDB connection successful");
 
-// Routes
-app.use("/users", userRoutes);
+    // Middleware
+    app.use(morgan("dev"));
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
 
-// Home route
-app.get("/", (req: Request, res: Response) => {
-  res.send("Welcome to the Express.js TypeScript Project Setup!");
-});
+    // Routes
+    app.use("/locations", locationRouter);
+    app.use("/routes", routeRouter);
 
-// 404 Error Handling
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.status(404).send("Route not found!");
-});
+    // Home route
+    app.get("/", (req: Request, res: Response) => {
+      res.send("Welcome to lagos guide backend");
+    });
 
-// Global Error Handler
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).send("Something broke!");
-});
+    // 404 Error Handling
+    app.use((req: Request, res: Response, next: NextFunction) => {
+      res.status(404).send("Route not found!");
+    });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+    // Global Error Handler
+    app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+      console.error(err.stack);
+      res.status(500).send("Something broke!");
+    });
+
+    // Start the server
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running at http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("MongoDB connection failed:", err);
+  });
