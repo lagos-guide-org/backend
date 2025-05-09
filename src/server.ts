@@ -49,3 +49,5 @@ connectDB()
   .catch((err) => {
     console.error("MongoDB connection failed:", err);
   });
+
+// Hosted Link: https://backend-bfgp.onrender.com
